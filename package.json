@@ -7,9 +7,12 @@
     "@tensorflow/tfjs": "^0.13.1",
     "react": "^16.6.0",
     "react-dom": "^16.6.0",
+    "react-pose": "^3.4.0",
     "react-scripts": "2.1.1",
+    "react-sound": "^1.2.0",
     "react-webcam": "^1.0.4",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "styled-components": "^4.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
