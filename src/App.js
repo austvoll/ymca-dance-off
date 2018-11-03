@@ -3,81 +3,60 @@ import logo from './logo.svg';
 import './App.css';
 import WebCam from './containers/WebCam';
 import SoundPlayback from './containers/SoundPlayback';
-import posed from 'react-pose';
-import styled from 'styled-components'
+import Star from './containers/Star';
+import Score from './containers/Score';
 
-const Box = posed.div({
-  visible: {
-    opacity: 1,
-    transition: { 
-      opacity: { 
-        ease: 'circInOut',
-        duration: 300
-      } 
-    }
-  },
-  hidden: { opacity: 0 }
-});
+import { updateDesiredPosition, updateActualPosition } from './actions';
 
-const StyledBoxA = styled(Box)`
-  width: 100px;
-  height: 100px;
-  background: #ff1c68;
-  transform-origin: 50% 50%;
-`;
-
-const StyledBox = styled(Box)`
-  position: absolute;
-  top: 40px; left: 600px;
-  width: 100px;
-  height: 100px;
-  background-image: url("star.png");
-`;
+import { connect } from 'react-redux'
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state ={
-      isVisible: true
+      start: false
     }
 
-    this.toggleVisibility = this.toggleVisibility.bind(this);
+    this.triggerStart = this.triggerStart.bind(this);
   }
 
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
         <p>Test</p>
-        {/*<WebCam />*/}
-        <StyledBox
-          className="box"
-          pose={this.state.isVisible ? 'visible' : 'hidden'}
-          onClick={this.toggleVisibility}
-        />
-        <SoundPlayback />
+        <WebCam desiredPosition={this.props.desiredPosition} updateActualPosition={this.props.updateActualPosition} />
+        <SoundPlayback updateDesiredPosition={this.props.updateDesiredPosition} start={this.state.start} />
+        <Star score={this.props.score} />
+        <button onClick={this.triggerStart}>Start</button>
+        <Score score={this.props.score} />
       </div>
     );
   }
 
-  toggleVisibility() {
+  triggerStart() {
     this.setState(state => ({
-      isVisible: !state.isVisible
+      start: true
     }));
   }
 }
 
-export default App;
+const mapStateToProps = state => {
+  return {
+    desiredPosition: state.anotherReducer.desiredPosition,
+    score: state.anotherReducer.score
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    updateDesiredPosition: data => dispatch(updateDesiredPosition(data)),
+    updateActualPosition: data => dispatch(updateActualPosition(data))
+  }
+}
+
+const VisibleApp = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(App)
+
+export default VisibleApp;

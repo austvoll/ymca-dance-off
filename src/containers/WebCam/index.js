@@ -1,35 +1,37 @@
 import React from 'react';
 
+import estimateSinglePose from '../../actions/pose';
+
 import Webcam from "react-webcam";
 
-import * as posenet from '@tensorflow-models/posenet';
-
-const imageScaleFactor = 0.5;
-const outputStride = 16;
-const flipHorizontal = false;
-
-function estimateSinglePose(imageElement) {
-  // load the posenet model from a checkpoint
-  console.log('asdf');
-  const net = posenet.load().then(function(net) {
-    return net.estimateSinglePose(imageElement, imageScaleFactor, flipHorizontal, outputStride);
-  }).then(function(pose){
-    console.log(pose);
-  });
-}
-
 class WebcamCapture extends React.Component {
+    constructor(props) {
+      super(props)
+      this.capture = this.capture.bind(this);
+    }
+
     setRef = webcam => {
       this.webcam = webcam;
     };
 
     capture = () => {
       const imageSrc = this.webcam.getScreenshot();
-      console.log(imageSrc);
-      let asdf = new Image(1280, 720);
-      asdf.src = imageSrc;
-      estimateSinglePose(asdf);
+      let image = new Image(1280, 720);
+      image.src = imageSrc;
+      
+      estimateSinglePose(image, (position) => {
+        this.props.updateActualPosition({
+          actualPosition: position
+        });
+      })
+      
     };
+
+    componentDidUpdate(prevProps) {
+      if(prevProps.desiredPosition != this.props.desiredPosition) {
+        this.capture();
+      }
+    }
    
     render() {
       const videoConstraints = {
@@ -48,10 +50,9 @@ class WebcamCapture extends React.Component {
             width={350}
             videoConstraints={videoConstraints}
           />
-          <button onClick={this.capture}>Capture photo</button>
         </div>
       );
-    };
+    }
   }
 
   export default WebcamCapture;
